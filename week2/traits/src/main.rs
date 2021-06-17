@@ -1,4 +1,4 @@
-#[derive(Debug, Clone, Copy)]
+#[derive(Debug, Clone, Copy, PartialEq)]
 pub enum Cake {
     Chocolate,
     MapleBacon,
@@ -21,6 +21,19 @@ impl Default for Party {
         }
     }
 }
+
+impl PartialEq for Party {
+    fn eq(&self, other: &Self) -> bool {
+        self.cake == other.cake
+    }
+}
+
+impl From<Party> for Cake {
+    fn from(p: Party) -> Self {
+        p.cake
+    }
+}
+
 fn main() {
     // 1. The code below doesn't work because Cake doesn't implement Debug.
     // - Derive the Debug trait for the Cake enum above so this code will work.
@@ -62,10 +75,11 @@ fn main() {
     // Hint: The trick to struct update syntax is specifying the value(s) you want to customize and
     // then ending the struct with `..Default::default()` -- but no comma after that!
 
-    // let party = Party {
-    //     ...
-    // };
-    // println!("Yes! My party has my favorite {:?} cake!", party.cake);
+    let party = Party {
+        cake: Cake::MapleBacon,
+        ..Default::default()
+    };
+    println!("Yes! My party has my favorite {:?} cake!", party.cake);
 
     // 5. Parties are "equal" if they have the same cake.
     // - Derive the PartialEq trait for the Cake enum so Cakes can be compared.
@@ -73,27 +87,27 @@ fn main() {
     // then they are equal.
     // - Uncomment and run the code below.
 
-    // let other_party = Party {
-    //     at_restaurant: false,
-    //     num_people: 235,
-    //     cake: Cake::MapleBacon,
-    // };
-    // if party == other_party {
-    //     println!("Your party is just like mine!");
-    // }
+    let other_party = Party {
+        at_restaurant: false,
+        num_people: 235,
+        cake: Cake::MapleBacon,
+    };
+    if party == other_party {
+        println!("Your party is just like mine!");
+    }
 
     // Challenge: You would like to be able to pass a Party struct into the smell_cake() function
     // which takes a type T which implements the Into<Cake> trait.
     // - Uncomment the code below AND the smell_cake() function at the bottom of this file
     // - Implement From<Party> for Cake so that the code below will work.
 
-    // smell_cake(party);
+    smell_cake(party);
 }
 
 pub fn admire_cake(cake: Cake) {
     println!("What a nice {:?} cake! 🎂", cake);
 }
 
-// pub fn smell_cake<T: Into<Cake>>(something: T) {
-//     println!("Hmm...something smells like a {:?} cake!", something.into());
-// }
+pub fn smell_cake<T: Into<Cake>>(something: T) {
+    println!("Hmm...something smells like a {:?} cake!", something.into());
+}
